@@ -7,11 +7,10 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 
-import com.example.android.waitlist.data.TestUtil;
 import com.example.android.waitlist.data.WaitlistContract;
 import com.example.android.waitlist.data.WaitlistDbHelper;
 
@@ -21,7 +20,9 @@ public class MainActivity extends AppCompatActivity {
     private GuestListAdapter mAdapter;
     private SQLiteDatabase mDb;
 
-    // TODO (1) Create local EditText members for mNewGuestNameEditText and mNewPartySizeEditText
+    // TODO DONE(1) Create local EditText members for mNewGuestNameEditText and mNewPartySizeEditText
+    private EditText mNewGuestNameEditText;
+    private EditText mNewPartyEditText;
 
     // TODO (13) Create a constant string LOG_TAG that is equal to the class.getSimpleName()
 
@@ -35,7 +36,9 @@ public class MainActivity extends AppCompatActivity {
         // Set local attributes to corresponding views
         waitlistRecyclerView = (RecyclerView) this.findViewById(R.id.all_guests_list_view);
 
-        // TODO (2) Set the Edit texts to the corresponding views using findViewById
+        // TODO DONE(2) Set the Edit texts to the corresponding views using findViewById
+        mNewGuestNameEditText = (EditText) findViewById(R.id.person_name_edit_text);
+        mNewPartyEditText = (EditText) findViewById(R.id.party_count_edit_text);
 
         // Set layout for the RecyclerView, because it's a list we are using the linear layout
         waitlistRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -48,8 +51,8 @@ public class MainActivity extends AppCompatActivity {
         // because you will be adding restaurant customers
         mDb = dbHelper.getWritableDatabase();
 
-        // TODO (3) Remove this fake data call since we will be inserting our own data now
-        TestUtil.insertFakeData(mDb);
+        // TODO DONE(3) Remove this fake data call since we will be inserting our own data now
+        //TestUtil.insertFakeData(mDb);
 
         // Get all guest info from the database and save in a cursor
         Cursor cursor = getAllGuests();
@@ -69,19 +72,30 @@ public class MainActivity extends AppCompatActivity {
      */
     public void addToWaitlist(View view) {
 
-        // TODO (9) First thing, check if any of the EditTexts are empty, return if so
+        // TODO DONE(9) First thing, check if any of the EditTexts are empty, return if so
+        if (TextUtils.isEmpty(mNewGuestNameEditText.getText()) || TextUtils.isEmpty(mNewPartyEditText.getText()))
+            return;
 
-        // TODO (10) Create an integer to store the party size and initialize to 1
+        // TODO DONE(10) Create an integer to store the party size and initialize to 1
+        // TODO DONE(11) Use Integer.parseInt to parse mNewPartySizeEditText.getText to an integer
+        // TODO DONE(12) Make sure you surround the Integer.parseInt with a try catch and log any exception
+        int partySize;
+        try {
+             partySize = Integer.parseInt(mNewPartyEditText.getText().toString());
+        }
+        catch (Exception ex) {
+            partySize = 0;
+        }
 
-        // TODO (11) Use Integer.parseInt to parse mNewPartySizeEditText.getText to an integer
+        // TODO DONE(14) call addNewGuest with the guest name and party size
+        addNewGuest(mNewGuestNameEditText.getText().toString(), partySize);
 
-        // TODO (12) Make sure you surround the Integer.parseInt with a try catch and log any exception
+        // TODO DONE(19) call mAdapter.swapCursor to update the cursor by passing in getAllGuests()
+        mAdapter.swapCursor(getAllGuests());
 
-        // TODO (14) call addNewGuest with the guest name and party size
-
-        // TODO (19) call mAdapter.swapCursor to update the cursor by passing in getAllGuests()
-
-        // TODO (20) To make the UI look nice, call .getText().clear() on both EditTexts, also call clearFocus() on mNewPartySizeEditText
+        // TODO DONE(20) To make the UI look nice, call .getText().clear() on both EditTexts, also call clearFocus() on mNewPartySizeEditText
+        mNewGuestNameEditText.getText().clear();
+        mNewPartyEditText.getText().clear();
 
     }
 
@@ -104,15 +118,21 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
-    // TODO (4) Create a new addGuest method
+    // TODO DONE(4) Create a new addNewGuest method
 
-    // TODO (5) Inside, create a ContentValues instance to pass the values onto the insert query
+    private void addNewGuest(String name, int partySize) {
+        // TODO DONE(5) Inside, create a ContentValues instance to pass the values onto the insert query
+        ContentValues cv = new ContentValues();
 
-    // TODO (6) call put to insert the name value with the key COLUMN_GUEST_NAME
+        // TODO DONE(6) call put to insert the name value with the key COLUMN_GUEST_NAME
+        cv.put(WaitlistContract.WaitlistEntry.COLUMN_GUEST_NAME, name);
 
-    // TODO (7) call put to insert the party size value with the key COLUMN_PARTY_SIZE
+        // TODO DONE(7) call put to insert the party size value with the key COLUMN_PARTY_SIZE
+        cv.put(WaitlistContract.WaitlistEntry.COLUMN_PARTY_SIZE, partySize);
 
-    // TODO (8) call insert to run an insert query on TABLE_NAME with the ContentValues created
+        // TODO DONE(8) call insert to run an insert query on TABLE_NAME with the ContentValues created
+        mDb.insert(WaitlistContract.WaitlistEntry.TABLE_NAME, null, cv);
+    }
 
 
 
