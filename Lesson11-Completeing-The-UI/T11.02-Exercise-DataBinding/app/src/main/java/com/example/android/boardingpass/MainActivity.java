@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
 
     //TODO (3) Create a data binding instance called mBinding of type ActivityMainBinding
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
